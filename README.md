@@ -25,7 +25,7 @@
 
 <a id="chapter-2"></a>
 ## Схема
-![СХЕМА](https://github.com/voltNik/AltMeter-BMP280/blob/master/scheme.jpg)
+![СХЕМА](https://github.com/voltNik/AltMeter/blob/master/scheme.jpg)
 
 <a id="chapter-3"></a>
 ## Материалы и компоненты
