@@ -41,7 +41,7 @@
 <a id="chapter-4"></a>
 ## Как скачать и прошить
 * Скачать архив с проектом
-> На главной странице проекта (где ты читаешь этот текст) вверху справа зелёная кнопка **Clone or download**, вот её жми, там будет **Download ZIP**
+> На этой странице сверху справа зелёная кнопка **Clone or download**, жми её, там будет **Download ZIP**
 * Установить библиотеки в:  
 `C:\Program Files (x86)\Arduino\libraries\` (Windows x64)  
 `C:\Program Files\Arduino\libraries\` (Windows x86) 
@@ -75,5 +75,5 @@
 
 <a id="chapter-6"></a>
 ## Полезная информация
-* [Мой сайт](http://voltnik.ru/)
-* [Мой YouTube канал](https://www.youtube.com/channel/UC4s13gPVOMQVX3P1ZpdUwjA?sub_confirmation=1)
+* [Мой сайт VOLTNIK.RU](http://voltnik.ru/)
+* [Мой YouTube канал VOLTNIK](https://www.youtube.com/channel/UC4s13gPVOMQVX3P1ZpdUwjA?sub_confirmation=1)
