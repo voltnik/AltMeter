@@ -19,7 +19,7 @@
 
 <a id="chapter-1"></a>
 ## Папки
-- **libraries** - типовые библиотеки с настройкой адресов I2C, использовать не обязательно. 
+- **libraries** - типовые библиотеки с настройкой адресов I2C, использовать не обязательно. Используются: Adafruit_BMP280, Adafruit_Sensor, Adafruit_SSD1306, Adafruit-GFX, EEPROMEx.
 - **barometer280** - прошивка для Arduino
 - **3d-model** - модель корпуса .stl для 3D печати
 

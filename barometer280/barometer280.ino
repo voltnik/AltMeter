@@ -12,11 +12,13 @@ YOUTUBE: https://www.youtube.com/channel/UC4s13gPVOMQVX3P1ZpdUwjA
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP280.h>
+#include <EEPROMex.h>
 
 #define OLED_RESET 4
 #define but1 2                    // пин кнопки1
 #define but2 3                    // пин кнопки2
 
+#define longpress 3000            // сколько длительное нажатие 
 #define screen_ref 300            // обновление экрана каждые милисекунд
 #define but_protect 100           // защита дребегза кнопки
 #define mass_l 20                 // длинна массива средних
@@ -30,10 +32,9 @@ float pressure_zero = 1005.00;           // нулевая точка давле
 
 float pressure[mass_l];  // массив давления
 float temp[mass_l];      // массив температуры
-float alt[mass_l];      // массив температуры
-float cur_pres = 0, pres_sr = 0, temp_sr = 0, alt_sr = 0; // среднее давление и температура
-byte pos = 0;
-
+float pres_sr = 0, temp_sr = 0, alt_sr = 0; // среднее давление и температура
+byte pos = 0, sensorVal1, sensorVal2;
+boolean pressed = false;
 //=====================================
 void setup()   {                
   Serial.begin(9600);
@@ -43,7 +44,9 @@ void setup()   {
 
   pinMode(5, OUTPUT);  // использую контакт как массу для одной из кнопок
   digitalWrite(5, 0);
-    
+
+  pressure_zero = EEPROM.readFloat(0); // читаем из памяти значение давления в нулевой точке
+      
   if (!bmp.begin()) {  
     Serial.println(F("Could not find a valid BMP280 sensor, check wiring!"));
     while (1);
@@ -78,9 +81,8 @@ void setup()   {
 }
 //=====================================
 void loop() {
-  byte sensorVal1 = digitalRead(but1);
-  byte sensorVal2 = digitalRead(but2);
-    
+  sensorVal1 = digitalRead(but1);
+  sensorVal2 = digitalRead(but2);
   now_millis = millis();  // разово на цикл запоминаем старт милисекунд
 
  // обработка нажатия кнопки 1
@@ -88,14 +90,37 @@ void loop() {
     num_ekr = (num_ekr+1) % 4; 
     last_but1 = now_millis + 500;  // +500мс задержка следующего нажатия кнопки 1
   }
-// обработка нажатия кнопки 2
-  if ((sensorVal2 == LOW) & (now_millis - last_but2)> but_protect) { 
-    pressure_zero = pres_sr / 100;
-    last_but2 = now_millis + 500;  // +500мс задержка следующего нажатия кнопки 2
+
+
+// обработка длинного нажатия кнопки 2
+  if ((sensorVal2 == LOW) & (!pressed)) { 
+    last_but2 = now_millis;
+    pressed = true;
+  }
+// если держали более 3 секунд  
+  if (pressed & ((now_millis-last_but2) > longpress)) { 
+      pressure_zero = pres_sr / 100;
+      EEPROM.writeFloat(0,pressure_zero); // записываем в память значение давления в нулевой точке  
+      display.clearDisplay();  
+      display.setTextSize(2);
+      display.setCursor(0,0);
+      display.print("Writing..");
+      display.display();
+      pressed = false;
+      delay(500);
+      last_but2 = now_millis;
+    }
+// обработка отпускания кнопки 2  
+  if ((sensorVal2 == HIGH) & pressed) {
+    if ((now_millis - last_but2)> but_protect) { // короткое нажатие кнопки 2 если надо
+      Serial.println("Short Press!");
+    }
+    pressed = false;
   }
 
+  // цикл обновления экрана
   if (now_millis - last_millis > screen_ref) {
-    
+
     //цикл обновления массива температуры и давления
     pos = (pos + 1) % mass_l;
     pressure[pos] = bmp.readPressure();
@@ -117,48 +142,49 @@ void loop() {
   switch (num_ekr) {
   case 0:
     display.clearDisplay();  
-    display.setTextColor(WHITE);
     display.setTextSize(1);
     display.setCursor(0,0);
     display.println("     Baro-280"); display.println();    
-    display.print("Press: "); display.println(pressure[pos]);
-    display.print("P_SR : "); display.println(pres_sr);
-    display.print("Alt  : "); display.println(bmp.readAltitude());
-    display.print("Alt Z: "); display.println(bmp.readAltitude(pressure_zero));
-    display.print("Calc : "); display.println(calcAltitude(pressure_zero, pres_sr));
-    display.print("Temp : "); display.println(temp_sr);
+    display.print("Press: "); display.println(pres_sr);
+    display.print("Alt Sea: "); display.println(bmp.readAltitude());
+    display.print("Alt Zero: "); display.println(calcAltitude(pressure_zero, pres_sr));
+    display.print("Temp: "); display.println(temp_sr);
     display.display();
     break;
   case 1:
     display.clearDisplay();  
-    display.setTextColor(WHITE);
     display.setTextSize(2);
     display.setCursor(0,0);
     display.print("Pressure");
     display.setCursor(0,24);
-    display.println(bmp.readPressure());
-    display.println(pressure_zero);
+    display.println(pres_sr);
     display.display();
     break;
   case 2:
     display.clearDisplay();  
-    display.setTextColor(WHITE);
     display.setTextSize(2);
     display.setCursor(0,0);
-    display.print("Alt");
+    display.print("Alt Sea");
     display.setCursor(0,24);
-    display.println(bmp.readAltitude(pressure_zero));
+    display.println(bmp.readAltitude());
+    display.display();
+    break;
+  case 3:
+    display.clearDisplay();  
+    display.setTextSize(2);
+    display.setCursor(0,0);
+    display.print("Alt Zero");
+    display.setCursor(0,24);
     display.println(calcAltitude(pressure_zero, pres_sr));
     display.display();
     break;
-  case 3:   
+  case 4:   
     display.clearDisplay();  
-    display.setTextColor(WHITE);
     display.setTextSize(2);
     display.setCursor(0,0);
     display.print("Temp");
     display.setCursor(0,24);
-    display.println(bmp.readTemperature());
+    display.println(temp_sr);
     display.display();
     break;
   }
