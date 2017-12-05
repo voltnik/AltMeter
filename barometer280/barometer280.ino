@@ -41,7 +41,7 @@ void setup()   {
   pinMode(but1, INPUT_PULLUP);
   pinMode(but2, INPUT_PULLUP);
 
-  pinMode(5, OUTPUT); 
+  pinMode(5, OUTPUT);  // использую контакт как массу для одной из кнопок
   digitalWrite(5, 0);
     
   if (!bmp.begin()) {  
@@ -95,24 +95,25 @@ void loop() {
   }
 
   if (now_millis - last_millis > screen_ref) {
+    
     //цикл обновления массива температуры и давления
     pos = (pos + 1) % mass_l;
-    //Serial.print(pos); Serial.print(" ");
     pressure[pos] = bmp.readPressure();
     temp[pos] = bmp.readTemperature();
+    
     // пересчет средних значений
     pres_sr = 0; 
     temp_sr = 0;
+    // пересчет средних значений
     for (byte i=0; i<mass_l; i++) {
       //Serial.print(pressure[i]); Serial.print(" ");
       pres_sr = pres_sr + pressure[i];
       temp_sr = temp_sr + temp[i];
     }
-    //Serial.println("end");
     pres_sr /= mass_l;
     temp_sr /= mass_l;
     
-
+  // вывод на экран
   switch (num_ekr) {
   case 0:
     display.clearDisplay();  
@@ -166,7 +167,7 @@ void loop() {
   }
   
 }
-//=====================================
+//===================================== квадратики на старте
 void testdrawrect(void) {
   for (int16_t i=0; i<display.height()/2; i+=2) {
     display.drawRect(i, i, display.width()-2*i, display.height()-2*i, WHITE);
@@ -174,7 +175,7 @@ void testdrawrect(void) {
     delay(1);
   }
 }
-//=====================================
+//===================================== расчет высоты
 float calcAltitude(float seaLevelhPa, float pressure) {
   float altitude;
   pressure /= 100;
