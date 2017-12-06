@@ -36,7 +36,8 @@ float pres_sr = 0, temp_sr = 0, alt_sr = 0; // среднее давление �
 byte pos = 0, sensorVal1, sensorVal2;
 boolean pressed = false;
 //=====================================
-void setup()   {                
+void setup()   {        
+  boolean baro = false;        
   Serial.begin(9600);
 
   pinMode(but1, INPUT_PULLUP);
@@ -46,8 +47,8 @@ void setup()   {
   digitalWrite(5, 0);
 
   pressure_zero = EEPROM.readFloat(0); // читаем из памяти значение давления в нулевой точке
-      
-  if (!bmp.begin()) {  
+
+ if (!bmp.begin()) {  
     Serial.println(F("Could not find a valid BMP280 sensor, check wiring!"));
     while (1);
   }
@@ -87,10 +88,10 @@ void loop() {
 
  // обработка нажатия кнопки 1
   if ((sensorVal1 == LOW) & (now_millis - last_but1)> but_protect) { 
-    num_ekr = (num_ekr+1) % 4; 
+    num_ekr = (num_ekr+1) % 6;
+    Serial.println(num_ekr);
     last_but1 = now_millis + 500;  // +500мс задержка следующего нажатия кнопки 1
   }
-
 
 // обработка длинного нажатия кнопки 2
   if ((sensorVal2 == LOW) & (!pressed)) { 
@@ -173,12 +174,24 @@ void loop() {
     display.clearDisplay();  
     display.setTextSize(2);
     display.setCursor(0,0);
-    display.print("Alt Zero");
+    display.print("Alt Zero1");
     display.setCursor(0,24);
     display.println(calcAltitude(pressure_zero, pres_sr));
+    display.setTextSize(1);
+    display.setCursor(0,48);
+    display.print("filtered");
     display.display();
     break;
-  case 4:   
+  case 4:
+    display.clearDisplay();  
+    display.setTextSize(2);
+    display.setCursor(0,0);
+    display.print("Alt Zero2");
+    display.setCursor(0,24);
+    display.println(calcAltitude(pressure_zero, pressure[pos]));
+    display.display();
+    break;    
+  case 5:   
     display.clearDisplay();  
     display.setTextSize(2);
     display.setCursor(0,0);
