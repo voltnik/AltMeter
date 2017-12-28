@@ -26,7 +26,7 @@
 
 <a id="chapter-2"></a>
 ## Схема
-![СХЕМА](https://github.com/voltNik/AltMeter/blob/master/scheme.jpg)
+![СХЕМА](https://github.com/voltNik/AltMeter/blob/master/scheme_altmeter.jpg)
 
 <a id="chapter-3"></a>
 ## Материалы и компоненты
