@@ -21,7 +21,7 @@ YOUTUBE: https://www.youtube.com/channel/UC4s13gPVOMQVX3P1ZpdUwjA
 #define longpress 3000            // сколько длительное нажатие 
 #define screen_ref 300            // обновление экрана каждые милисекунд
 #define but_protect 100           // защита дребегза кнопки
-#define mass_l 20                 // длинна массива средних
+#define mass_l 10                 // длинна массива средних
 
 Adafruit_SSD1306 display(OLED_RESET);
 Adafruit_BMP280 bmp; // I2C
